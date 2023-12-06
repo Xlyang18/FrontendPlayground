@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Grid Coloring</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(16, 1fr);
+      grid-template-rows: repeat(16, 1fr);
+      gap: 2px;
+      width: 400px;
+      height: 400px;
+      margin-bottom: 20px;
+    }
+
+    .grid-item {
+      background-color: white;
+      border: 1px solid #ccc;
+    }
+
+    .grid-item.clicked {
+      background-color: black;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-container" id="gridContainer"></div>
+  <div>
+    <button onclick="resetGrid()">重置图形</button>
+    <button onclick="exportAsPNG()">导出为PNG</button>
+  </div>
+  <script>
+    const gridContainer = document.getElementById('gridContainer');
+
+    // 创建16x16的网格
+    for (let i = 0; i < 256; i++) {
+      const gridItem = document.createElement('div');
+      gridItem.classList.add('grid-item');
+      gridContainer.appendChild(gridItem);
+
+      // 点击方块改变颜色
+      gridItem.addEventListener('click', () => {
+        gridItem.classList.toggle('clicked');
+      });
+    }
+
+    // 重置网格颜色
+    function resetGrid() {
+      const gridItems = document.querySelectorAll('.grid-item');
+      gridItems.forEach(item => {
+        item.classList.remove('clicked');
+      });
+    }
+
+    // 导出为 PNG
+    function exportAsPNG() {
+      html2canvas(gridContainer).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'grid.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+  </script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</body>
+</html>
