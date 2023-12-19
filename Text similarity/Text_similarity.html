@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>文本相似性检测</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: Arial, sans-serif;
+    }
+
+    textarea {
+      width: 90%;
+      height: 200px;
+      resize: none;
+      margin-bottom: 20px;
+      padding: 10px;
+      box-sizing: border-box;
+    }
+
+    p {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <textarea id="text1" placeholder="输入文本1"></textarea>
+  <textarea id="text2" placeholder="输入文本2"></textarea>
+  <p id="similarity">文本相似度: 0</p>
+
+  <script>
+    function calculateSimilarity() {
+      const text1 = document.getElementById('text1').value;
+      const text2 = document.getElementById('text2').value;
+
+      // 计算 Levenshtein 距离
+      const similarity = calculateLevenshteinSimilarity(text1, text2);
+
+      // 更新页面上的相似度
+      document.getElementById('similarity').textContent = `文本相似度: ${similarity.toFixed(2)}`;
+    }
+
+    function calculateLevenshteinSimilarity(s1, s2) {
+      const len1 = s1.length;
+      const len2 = s2.length;
+
+      const matrix = [];
+
+      // 初始化矩阵
+      for (let i = 0; i <= len1; i++) {
+        matrix[i] = [i];
+      }
+
+      for (let j = 0; j <= len2; j++) {
+        matrix[0][j] = j;
+      }
+
+      // 计算 Levenshtein 距离
+      for (let i = 1; i <= len1; i++) {
+        for (let j = 1; j <= len2; j++) {
+          let cost = s1.charAt(i - 1) === s2.charAt(j - 1) ? 0 : 1;
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j - 1] + cost
+          );
+        }
+      }
+
+      // 计算相似度（将 Levenshtein 距离转换为相似度）
+      const maxLen = Math.max(len1, len2);
+      const similarity = 1 - matrix[len1][len2] / maxLen;
+
+      return similarity;
+    }
+
+    // 每秒钟执行一次检测
+    setInterval(calculateSimilarity, 1000);
+  </script>
+</body>
+</html>
